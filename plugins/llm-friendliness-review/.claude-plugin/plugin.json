@@ -1,0 +1,12 @@
+{
+  "name": "llm-friendliness-review",
+  "description": "Audit your codebase for LLM-friendliness. Run after major changes, when confused by code, or periodically.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Artem Shtanov",
+    "email": "artem@headframe.io"
+  },
+  "homepage": "https://github.com/artem-shtanov/claude-code-plugins",
+  "license": "MIT",
+  "keywords": ["audit", "code-quality", "llm", "documentation", "review"]
+}

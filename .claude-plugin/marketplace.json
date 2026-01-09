@@ -1,0 +1,26 @@
+{
+  "name": "artem-plugins",
+  "owner": {
+    "name": "Artem Shtanov",
+    "email": "artem@headframe.io"
+  },
+  "metadata": {
+    "description": "Claude Code plugins for LLM-first development workflows",
+    "version": "1.0.0",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "llm-friendliness-review",
+      "source": "./plugins/llm-friendliness-review",
+      "description": "Audit your codebase for LLM-friendliness. Run after major changes, when confused by code, or periodically.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Artem Shtanov"
+      },
+      "keywords": ["audit", "code-quality", "llm", "documentation", "review"],
+      "category": "code-quality",
+      "license": "MIT"
+    }
+  ]
+}
