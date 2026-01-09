@@ -1,4 +1,4 @@
-# Claude Code Plugins
+# Apfelbaums-Plugins
 
 A collection of Claude Code plugins for LLM-first development workflows.
 
