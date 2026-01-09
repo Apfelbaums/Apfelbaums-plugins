@@ -6,7 +6,7 @@
     "name": "Artem Shtanov",
     "email": "artem@headframe.io"
   },
-  "homepage": "https://github.com/artem-shtanov/claude-code-plugins",
+  "homepage": "https://github.com/Apfelbaums/claude-code-plugins",
   "license": "MIT",
   "keywords": ["audit", "code-quality", "llm", "documentation", "review"]
 }

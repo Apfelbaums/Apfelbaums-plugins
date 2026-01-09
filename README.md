@@ -15,13 +15,13 @@ A collection of Claude Code plugins for LLM-first development workflows.
 ### 1. Add the marketplace
 
 ```bash
-/plugin marketplace add artem-shtanov/claude-code-plugins
+/plugin marketplace add Apfelbaums/claude-code-plugins
 ```
 
 ### 2. Install a plugin
 
 ```bash
-/plugin install llm-friendliness-review@artem-plugins
+/plugin install llm-friendliness-review@apfelbaum-plugins
 ```
 
 ---
@@ -91,13 +91,13 @@ To test plugins locally:
 
 ```bash
 # Clone the repo
-git clone https://github.com/artem-shtanov/claude-code-plugins.git
+git clone https://github.com/Apfelbaums/claude-code-plugins.git
 
 # Add as local marketplace
 /plugin marketplace add ./claude-code-plugins
 
 # Install plugin
-/plugin install llm-friendliness-review@artem-plugins
+/plugin install llm-friendliness-review@apfelbaum-plugins
 
 # Test it
 /llm-friendliness-review
