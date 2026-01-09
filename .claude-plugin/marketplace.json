@@ -1,8 +1,7 @@
 {
   "name": "apfelbaum-plugins",
   "owner": {
-    "name": "Artem Shtanov",
-    "email": "artemshtanov@gmail.com"
+    "name": "Artem Shtanov"
   },
   "metadata": {
     "description": "Claude Code plugins for LLM-first development workflows",

@@ -3,8 +3,7 @@
   "description": "Audit your codebase for LLM-friendliness. Run after major changes, when confused by code, or periodically.",
   "version": "1.0.0",
   "author": {
-    "name": "Artem Shtanov",
-    "email": "artem@headframe.io"
+    "name": "Artem Shtanov"
   },
   "homepage": "https://github.com/Apfelbaums/claude-code-plugins",
   "license": "MIT",
