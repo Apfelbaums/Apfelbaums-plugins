@@ -20,7 +20,9 @@ Run this TypeScript script using `npx tsx`:
 
 ```typescript
 import * as fs from 'fs';
+import { createReadStream } from 'fs';
 import * as path from 'path';
+import * as readline from 'readline';
 
 const CLAUDE_DIR = process.env.HOME + '/.claude/projects';
 const LITELLM_URL = 'https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json';
@@ -115,6 +117,60 @@ function calculateCost(tokens: TokenBreakdown, pricing: LiteLLMPricing): number 
 interface TokenBreakdown { input: number; output: number; cacheRead: number; cacheCreate: number; }
 interface SkillExecution { skill: string; tokens: TokenBreakdown; model: string; nestedExecutions: SkillExecution[]; timestamp: string; }
 interface ActiveSkill { skill: string; tokens: TokenBreakdown; model: string; nestedExecutions: SkillExecution[]; timestamp: string; }
+interface ScanResult { fileCount: number; totalBytes: number; }
+
+function formatBytes(bytes: number): string {
+  if (bytes >= 1_000_000_000) return (bytes / 1_000_000_000).toFixed(1) + 'GB';
+  if (bytes >= 1_000_000) return (bytes / 1_000_000).toFixed(1) + 'MB';
+  if (bytes >= 1_000) return (bytes / 1_000).toFixed(0) + 'KB';
+  return bytes + 'B';
+}
+
+function scanDataVolume(): ScanResult {
+  let fileCount = 0, totalBytes = 0;
+  if (!fs.existsSync(CLAUDE_DIR)) return { fileCount: 0, totalBytes: 0 };
+
+  for (const project of fs.readdirSync(CLAUDE_DIR)) {
+    const projectPath = path.join(CLAUDE_DIR, project);
+    if (!fs.statSync(projectPath).isDirectory()) continue;
+    for (const file of fs.readdirSync(projectPath).filter((f: string) => f.endsWith('.jsonl'))) {
+      const stat = fs.statSync(path.join(projectPath, file));
+      fileCount++;
+      totalBytes += stat.size;
+    }
+  }
+  return { fileCount, totalBytes };
+}
+
+async function promptPeriod(scan: ScanResult): Promise<string> {
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  console.log(`\nFound ${scan.fileCount.toLocaleString()} files (${formatBytes(scan.totalBytes)})\n`);
+
+  return new Promise((resolve) => {
+    rl.question('Period (all, today, 7d, 30 days, 60...): ', (answer) => {
+      rl.close();
+      resolve(answer.trim().toLowerCase() || 'all');
+    });
+  });
+}
+
+function parsePeriod(input: string): (ts: string) => boolean {
+  const now = new Date();
+  const today = now.toISOString().split('T')[0];
+
+  if (/^(today|сегодня)$/i.test(input)) {
+    return (ts) => ts.startsWith(today);
+  }
+
+  const daysMatch = input.match(/^(\d+)\s*(d|days?|дн|дней|дня)?$/i);
+  if (daysMatch) {
+    const days = parseInt(daysMatch[1], 10);
+    const cutoff = new Date(now.getTime() - days * 86400000).toISOString();
+    return (ts) => ts >= cutoff;
+  }
+
+  return () => true;
+}
 
 function isRealUserMessage(entry: any): boolean {
   if (entry.type !== 'user') return false;
@@ -161,18 +217,61 @@ function totalTokens(t: TokenBreakdown): number {
   return t.input + t.output + t.cacheRead + t.cacheCreate;
 }
 
+const sumNestedCache = new WeakMap<SkillExecution, TokenBreakdown>();
+
 function sumNested(exec: SkillExecution): TokenBreakdown {
+  const cached = sumNestedCache.get(exec);
+  if (cached) return cached;
+
   let sum: TokenBreakdown = { input: 0, output: 0, cacheRead: 0, cacheCreate: 0 };
   for (const nested of exec.nestedExecutions) {
     sum = addTokens(sum, nested.tokens);
     sum = addTokens(sum, sumNested(nested));
   }
+
+  sumNestedCache.set(exec, sum);
   return sum;
 }
 
-function findTopLevelExecutions(todayOnly: boolean): SkillExecution[] {
+class TimestampBuffer {
+  private buffer: any[] = [];
+  private readonly maxSize = 200;
+
+  push(entry: any): any | null {
+    this.buffer.push(entry);
+    this.buffer.sort((a, b) => (a.timestamp || '').localeCompare(b.timestamp || ''));
+    if (this.buffer.length > this.maxSize) return this.buffer.shift();
+    return null;
+  }
+
+  flush(): any[] {
+    const result = this.buffer;
+    this.buffer = [];
+    return result;
+  }
+}
+
+async function* streamFileEntries(filePath: string, filterFn: (ts: string) => boolean): AsyncGenerator<any> {
+  const fileStream = createReadStream(filePath, { encoding: 'utf-8' });
+  const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
+  const buffer = new TimestampBuffer();
+
+  for await (const line of rl) {
+    if (!line.trim()) continue;
+    let entry: any;
+    try { entry = JSON.parse(line); } catch { continue; }
+
+    if (!filterFn(entry.timestamp || '')) continue;
+
+    const stable = buffer.push(entry);
+    if (stable) yield stable;
+  }
+
+  for (const entry of buffer.flush()) yield entry;
+}
+
+async function findTopLevelExecutions(filterFn: (ts: string) => boolean): Promise<SkillExecution[]> {
   const topLevel: SkillExecution[] = [];
-  const today = new Date().toISOString().split('T')[0];
 
   if (!fs.existsSync(CLAUDE_DIR)) return topLevel;
   const projects = fs.readdirSync(CLAUDE_DIR);
@@ -184,20 +283,9 @@ function findTopLevelExecutions(todayOnly: boolean): SkillExecution[] {
 
     for (const file of files) {
       const filePath = path.join(projectPath, file);
-      const content = fs.readFileSync(filePath, 'utf-8');
-      const lines = content.split('\n').filter((l: string) => l.trim());
-
-      const entries: any[] = [];
-      for (const line of lines) {
-        try { entries.push(JSON.parse(line)); } catch (e) {}
-      }
-      entries.sort((a, b) => (a.timestamp || '').localeCompare(b.timestamp || ''));
-
       const stack: ActiveSkill[] = [];
 
-      for (const entry of entries) {
-        if (todayOnly && entry.timestamp && !entry.timestamp.startsWith(today)) continue;
-
+      for await (const entry of streamFileEntries(filePath, filterFn)) {
         const { tokens, model } = getTokens(entry);
 
         if (stack.length > 0 && totalTokens(tokens) > 0) {
@@ -306,11 +394,15 @@ async function aggregateStats(executions: SkillExecution[], pricing: Map<string,
 
 async function main() {
   const args = process.argv.slice(2);
-  const todayOnly = args.includes('today');
   const jsonMode = args.includes('--json');
 
+  // Interactive mode: scan and prompt for period
+  const scan = scanDataVolume();
+  const periodInput = await promptPeriod(scan);
+  const filterFn = parsePeriod(periodInput);
+
   const pricing = await fetchPricing();
-  const executions = findTopLevelExecutions(todayOnly);
+  const executions = await findTopLevelExecutions(filterFn);
   const stats = await aggregateStats(executions, pricing);
   const sorted = [...stats.entries()].sort((a, b) => b[1].cost - a[1].cost);
 
@@ -326,7 +418,7 @@ async function main() {
 
   if (jsonMode) {
     const output = {
-      period: todayOnly ? 'today' : 'all-time',
+      period: periodInput || 'all',
       total: { count: grandCount, tokens: totalTokens(grandTokens), cost: grandCost },
       skills: sorted.map(([skill, s]) => ({
         skill, count: s.count, tokens: totalTokens(s.tokens), cost: s.cost, avgCost: s.cost / s.count,
@@ -337,9 +429,9 @@ async function main() {
     return;
   }
 
-  const period = todayOnly ? 'TODAY' : 'ALL TIME';
+  const periodLabel = (periodInput || 'all').toUpperCase();
   console.log('');
-  console.log(`SKILL USAGE REPORT (${period})`);
+  console.log(`SKILL USAGE REPORT (${periodLabel})`);
   console.log('═'.repeat(90));
   console.log('');
   console.log('┌──────────────────────────────────────────┬───────┬──────────┬──────────┬──────────┬──────────┐');

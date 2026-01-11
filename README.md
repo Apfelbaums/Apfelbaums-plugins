@@ -7,6 +7,7 @@ A collection of Claude Code plugins for LLM-first development workflows.
 | Plugin | Description |
 |--------|-------------|
 | [llm-friendliness-review](#llm-friendliness-review) | Audit your codebase for LLM-friendliness |
+| [skill-stats](#skill-stats) | Track Claude Code usage by skill invocation with LiteLLM pricing |
 
 ---
 
@@ -81,6 +82,56 @@ Results are categorized as:
   Failed:   1
 
   ✗ LLM will struggle with this codebase — fix FAILs first
+```
+
+---
+
+### skill-stats
+
+Track token usage and costs by skill invocation across all Claude Code sessions. Uses real-time pricing from LiteLLM.
+
+**Usage:**
+
+```bash
+/skill-stats
+```
+
+Interactive mode prompts for period selection:
+
+```
+Found 11,197 files (1.1GB)
+
+Period (all, today, 7d, 30 days, 60...):
+```
+
+Supports flexible period input:
+- `today` / `сегодня` — today only
+- `7d` / `7 days` / `7` — last N days
+- `all` / empty — all time
+
+**Features:**
+
+- Real-time pricing from LiteLLM (2000+ models)
+- Tiered pricing support (above 200k tokens)
+- Nested skill tracking with tree view
+- Memory-efficient streaming (handles 1GB+ data)
+- JSON output with `--json` flag
+
+**Example output:**
+
+```
+SKILL USAGE REPORT (TODAY)
+══════════════════════════════════════════════════════════════════════════════════════════
+
+┌──────────────────────────────────────────┬───────┬──────────┬──────────┬──────────┬──────────┐
+│ Skill                                    │ Count │  Tokens  │   Cost   │ Avg Tok  │ Avg Cost │
+├──────────────────────────────────────────┼───────┼──────────┼──────────┼──────────┼──────────┤
+│ railway                                  │     3 │    12.6M │    $6.99 │     4.2M │    $2.33 │
+│ daily                                    │     1 │     1.3M │    $1.83 │     1.3M │    $1.83 │
+│ superpowers:brainstorming                │     2 │     737K │    $0.48 │     369K │    $0.24 │
+├──────────────────────────────────────────┼───────┼──────────┼──────────┼──────────┼──────────┤
+│ TOTAL                                    │     6 │    14.6M │    $9.30 │     2.4M │    $1.55 │
+└──────────────────────────────────────────┴───────┴──────────┴──────────┴──────────┴──────────┘
 ```
 
 ---
