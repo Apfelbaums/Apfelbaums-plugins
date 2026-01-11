@@ -20,6 +20,18 @@
       "keywords": ["audit", "code-quality", "llm", "documentation", "review"],
       "category": "code-quality",
       "license": "MIT"
+    },
+    {
+      "name": "skill-stats",
+      "source": "./plugins/skill-stats",
+      "description": "Track Claude Code usage by skill invocation with real-time LiteLLM pricing. Shows tokens, costs, and nested skill attribution.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Artem Shtanov"
+      },
+      "keywords": ["usage", "tokens", "cost", "skills", "analytics", "pricing"],
+      "category": "analytics",
+      "license": "MIT"
     }
   ]
 }

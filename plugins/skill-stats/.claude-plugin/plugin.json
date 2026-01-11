@@ -1,0 +1,12 @@
+{
+  "name": "skill-stats",
+  "version": "1.0.0",
+  "description": "Track Claude Code usage by skill invocation with real-time LiteLLM pricing",
+  "author": {
+    "name": "Artem Shtanov"
+  },
+  "repository": "https://github.com/Apfelbaums/claude-code-plugins",
+  "license": "MIT",
+  "keywords": ["skills", "usage", "tokens", "cost", "analytics"],
+  "commands": "./commands"
+}
