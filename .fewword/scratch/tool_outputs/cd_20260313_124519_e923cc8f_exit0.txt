@@ -1,0 +1,16 @@
+b2d94bc feat: add harness-engineering and project-documentation plugins
+---
+ .claude-plugin/marketplace.json                    |  24 +
+ .fewword/index/tool_outputs.jsonl                  |   2 +
+ .fewword/scratch/tool_outputs/LATEST.txt           |   1 +
+ .fewword/scratch/tool_outputs/LATEST_cd.txt        |   1 +
+ .../cd_20260313_124457_afded461_exit0.txt          |  16 +
+ README.md                                          |  97 +++
+ .../harness-engineering/.claude-plugin/plugin.json |  12 +
+ plugins/harness-engineering/README.md              | 128 ++++
+ .../commands/harness-engineering.md                | 200 ++++++
+ .../references/harness-guide.md                    | 707 +++++++++++++++++++++
+ .../.claude-plugin/plugin.json                     |  12 +
+ plugins/project-documentation/README.md            | 102 +++
+ .../commands/project-documentation.md              | 120 ++++
+ 13 files changed, 1422 insertions(+)

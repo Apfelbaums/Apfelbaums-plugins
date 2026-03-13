@@ -17,7 +17,7 @@ After completing ANY task, the skill:
 
 ## Usage
 
-```bash
+```bash 
 /project-documentation
 ```
 

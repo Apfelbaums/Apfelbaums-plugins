@@ -1,0 +1,14 @@
+M  .claude-plugin/marketplace.json
+A  .fewword/index/tool_outputs.jsonl
+A  .fewword/scratch/tool_outputs/LATEST.txt
+A  .fewword/scratch/tool_outputs/LATEST_cd.txt
+A  .fewword/scratch/tool_outputs/cd_20260313_124457_afded461_exit0.txt
+A  .fewword/scratch/tool_outputs/cd_20260313_124502_675319cb_tmp.txt
+M  README.md
+A  plugins/harness-engineering/.claude-plugin/plugin.json
+A  plugins/harness-engineering/README.md
+A  plugins/harness-engineering/commands/harness-engineering.md
+A  plugins/harness-engineering/references/harness-guide.md
+A  plugins/project-documentation/.claude-plugin/plugin.json
+A  plugins/project-documentation/README.md
+A  plugins/project-documentation/commands/project-documentation.md

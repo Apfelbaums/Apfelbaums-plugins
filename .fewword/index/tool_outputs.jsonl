@@ -1,1 +1,3 @@
 {"type":"offload","id":"afded461","session_id":"","created_at":"2026-03-13T04:44:57Z","cmd":"cd","cmd_token":"cd","cmd_group":"cd","exit_code":0,"bytes":517,"lines":16,"path":".fewword/scratch/tool_outputs/cd_20260313_124457_afded461_exit0.txt"}
+{"type":"offload","id":"675319cb","session_id":"","created_at":"2026-03-13T04:45:02Z","cmd":"cd","cmd_token":"cd","cmd_group":"cd","exit_code":0,"bytes":707,"lines":14,"path":".fewword/scratch/tool_outputs/cd_20260313_124502_675319cb_exit0.txt"}
+{"type":"offload","id":"e923cc8f","session_id":"","created_at":"2026-03-13T04:45:19Z","cmd":"cd","cmd_token":"cd","cmd_group":"cd","exit_code":0,"bytes":929,"lines":16,"path":".fewword/scratch/tool_outputs/cd_20260313_124519_e923cc8f_exit0.txt"}
