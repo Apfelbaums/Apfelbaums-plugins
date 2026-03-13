@@ -1,0 +1,12 @@
+{
+  "name": "harness-engineering",
+  "version": "1.0.0",
+  "description": "Make repositories work as operating systems for AI agents. Audit agent-readiness, apply harness elements, or bootstrap L2 maturity.",
+  "author": {
+    "name": "Artem Shtanov"
+  },
+  "repository": "https://github.com/Apfelbaums/Apfelbaums-plugins",
+  "license": "MIT",
+  "keywords": ["harness", "agents", "claude-md", "architecture", "linters", "documentation"],
+  "commands": "./commands"
+}

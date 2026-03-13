@@ -6,6 +6,8 @@ A collection of Claude Code plugins for LLM-first development workflows.
 
 | Plugin | Description |
 |--------|-------------|
+| [harness-engineering](#harness-engineering) | Make repositories work as operating systems for AI agents |
+| [project-documentation](#project-documentation) | Post-task documentation checklist for keeping docs current |
 | [llm-friendliness-review](#llm-friendliness-review) | Audit your codebase for LLM-friendliness |
 | [skill-stats](#skill-stats) | Track Claude Code usage by skill invocation with LiteLLM pricing |
 
@@ -28,6 +30,101 @@ A collection of Claude Code plugins for LLM-first development workflows.
 ---
 
 ## Plugins
+
+### harness-engineering
+
+Make repositories work as operating systems for AI agents. Based on OpenAI's Codex harness, arXiv research, and production experience.
+
+**Usage:**
+
+```bash
+/harness-engineering
+```
+
+**Three Modes:**
+
+1. **Audit** — Evaluate agent-readiness across L1/L2/L3 maturity levels
+2. **Apply** — Implement specific harness elements (CLAUDE.md, linters, architecture docs)
+3. **Bootstrap L2** — Fully automated setup of all missing L2 artifacts
+
+**Maturity Levels:**
+
+| Level | Name | What |
+|-------|------|------|
+| **L1** | Basic Harness | CLAUDE.md, pre-commit hooks, test suite |
+| **L2** | Team Harness | Custom linters, architecture docs, testing strategy |
+| **L3** | Full Autonomy | Multi-agent coordination, metrics, doc-gardeners |
+
+**Key Features:**
+- MUST/MUST NOT language for clear constraints
+- Context minimalism (CLAUDE.md under 2000 tokens)
+- Linters with remediation messages
+- Architecture enforcement (TypeScript, Python, Go)
+- Comprehensive guide at `references/harness-guide.md`
+
+**Example Audit Output:**
+
+```markdown
+## Current Level: L1 (partial)
+
+### Gaps (prioritized)
+
+#### Critical (blocks agent effectiveness)
+- Missing CLAUDE.md → Create with commands, architecture, conventions
+- No pre-commit hooks → Add secret scanning, formatting
+
+#### Important (improves quality)
+- No architecture docs → Create ARCHITECTURE.md with domain map
+- Missing reference examples → Add docs/examples/
+
+### Recommended Next Steps
+1. Create CLAUDE.md with build/test commands
+2. Add pre-commit hooks with detect-private-key
+3. Document architecture in ARCHITECTURE.md
+```
+
+---
+
+### project-documentation
+
+Post-task documentation checklist. Ensures docs stay current after code or infrastructure changes.
+
+**Usage:**
+
+```bash
+/project-documentation
+```
+
+**How it Works:**
+
+1. Auto-detects project type (codebase vs command center)
+2. Presents yes/no checklist based on project type
+3. Guides you to update only what changed
+
+**Codebase Checklist:**
+- Architecture changes → ARCHITECTURE.md, ADRs
+- New patterns → docs/examples/
+- Infrastructure → docs/, CLAUDE.md
+- API changes → API docs
+- Conventions → CLAUDE.md MUST/MUST NOT
+- Cross-project dependencies
+
+**Command Center Checklist:**
+- Infrastructure → INFRASTRUCTURE.md
+- Services → SERVICES.md
+- Projects → PROJECTS.md
+- Agents → AGENTS.md
+- Workflows → WORKFLOWS.md
+
+**Example:**
+
+After adding a new API endpoint with rate limiting:
+- ✅ Update ARCHITECTURE.md (new rate-limiting layer)
+- ✅ Add docs/examples/rate-limited-endpoint.md
+- ✅ Update API docs
+- ✅ Add to CLAUDE.md: "MUST use rate limiter for all public endpoints"
+
+---
 
 ### llm-friendliness-review
 

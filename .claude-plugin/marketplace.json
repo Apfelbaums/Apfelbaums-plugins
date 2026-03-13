@@ -32,6 +32,30 @@
       "keywords": ["usage", "tokens", "cost", "skills", "analytics", "pricing"],
       "category": "analytics",
       "license": "MIT"
+    },
+    {
+      "name": "harness-engineering",
+      "source": "./plugins/harness-engineering",
+      "description": "Make repositories work as operating systems for AI agents. Audit agent-readiness, apply harness elements, or bootstrap L2 maturity.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Artem Shtanov"
+      },
+      "keywords": ["harness", "agents", "claude-md", "architecture", "linters", "documentation", "ai-engineering"],
+      "category": "development",
+      "license": "MIT"
+    },
+    {
+      "name": "project-documentation",
+      "source": "./plugins/project-documentation",
+      "description": "Post-task documentation checklist. Keeps docs current after code/infra changes. Detects project type and runs appropriate checklist.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Artem Shtanov"
+      },
+      "keywords": ["documentation", "checklist", "post-task", "claude-md", "maintenance"],
+      "category": "documentation",
+      "license": "MIT"
     }
   ]
 }

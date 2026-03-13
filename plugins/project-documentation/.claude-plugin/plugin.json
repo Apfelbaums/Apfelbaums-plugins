@@ -1,0 +1,12 @@
+{
+  "name": "project-documentation",
+  "version": "1.0.0",
+  "description": "Post-task documentation checklist. Keeps docs current after code/infra changes. Detects project type and runs appropriate checklist.",
+  "author": {
+    "name": "Artem Shtanov"
+  },
+  "repository": "https://github.com/Apfelbaums/Apfelbaums-plugins",
+  "license": "MIT",
+  "keywords": ["documentation", "checklist", "post-task", "claude-md", "architecture"],
+  "commands": "./commands"
+}
