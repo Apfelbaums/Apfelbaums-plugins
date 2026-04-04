@@ -1,0 +1,12 @@
+{
+  "name": "fact-check",
+  "version": "1.0.0",
+  "description": "Multi-agent fact verification for legal and financial documents. Extracts claims, verifies against web sources, cross-checks, and produces patched documents with citations.",
+  "author": {
+    "name": "Artem Shtanov"
+  },
+  "repository": "https://github.com/Apfelbaums/claude-code-plugins",
+  "license": "MIT",
+  "keywords": ["fact-check", "verification", "legal", "finance", "citations", "multi-agent"],
+  "commands": "./commands"
+}

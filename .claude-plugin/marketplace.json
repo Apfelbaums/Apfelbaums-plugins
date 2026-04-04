@@ -56,6 +56,18 @@
       "keywords": ["documentation", "checklist", "post-task", "claude-md", "maintenance"],
       "category": "documentation",
       "license": "MIT"
+    },
+    {
+      "name": "fact-check",
+      "source": "./plugins/fact-check",
+      "description": "Multi-agent fact verification for legal and financial documents. Extracts claims, verifies against web sources, cross-checks, and produces patched documents with citations.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Artem Shtanov"
+      },
+      "keywords": ["fact-check", "verification", "legal", "finance", "citations", "multi-agent"],
+      "category": "verification",
+      "license": "MIT"
     }
   ]
 }

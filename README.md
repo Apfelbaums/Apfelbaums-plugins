@@ -10,6 +10,7 @@ A collection of Claude Code plugins for LLM-first development workflows.
 | [project-documentation](#project-documentation) | Post-task documentation checklist for keeping docs current |
 | [llm-friendliness-review](#llm-friendliness-review) | Audit your codebase for LLM-friendliness |
 | [skill-stats](#skill-stats) | Track Claude Code usage by skill invocation with LiteLLM pricing |
+| [fact-check](#fact-check) | Multi-agent fact verification for legal and financial documents |
 
 ---
 
@@ -240,6 +241,38 @@ SKILL USAGE REPORT (TODAY)
 │ TOTAL                                    │     6 │    14.6M │    $9.30 │     2.4M │    $1.55 │
 └──────────────────────────────────────────┴───────┴──────────┴──────────┴──────────┴──────────┘
 ```
+
+---
+
+### fact-check
+
+Multi-agent fact verification for legal and financial documents. Extracts claims, verifies against web sources, cross-checks critical findings, and produces patched documents with citations.
+
+**Usage:**
+
+```bash
+/fact-check <path-to-document>
+```
+
+**Pipeline (5 phases):**
+
+1. **Extract** — Pull all verifiable claims using parallel agents (2-5 by document size)
+2. **Batch** — Group claims by topic for efficient search
+3. **Verify** — Web search per batch using parallel agents (3-5)
+4. **Cross-Check** — Re-verify incorrect + critical claims with different queries
+5. **Report + Patch** — Generate verification report and patched document with inline citations
+
+**Supports 8 claim types:** law, number, date, event, company, quote, process, comparison — each with type-specific verification strategies, minimum source requirements, and red flags.
+
+**Verdicts:**
+- ✅ RELIABLE — >90% verified, 0% incorrect
+- ⚠️ NEEDS REVIEW — 80-90% verified, or >0% incorrect
+- 🔴 UNRELIABLE — <80% verified, or >5% incorrect
+
+**Modes:**
+- Full check (all 5 phases)
+- `--quick` — skip cross-check
+- `--patch-only` — just add source links to existing citations
 
 ---
 
