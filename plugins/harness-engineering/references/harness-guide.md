@@ -296,7 +296,40 @@ Local hooks are advisory. CI is truth.
 
 Use merge queues (Mergify, GitHub merge queue) to ensure PRs are rebased and retested before merge.
 
-### 8. Architecture Documentation
+### 8. Claude Code Hooks
+
+Beyond git pre-commit hooks, Claude Code supports **session-level hooks** — shell scripts that run at specific lifecycle events (PreToolUse, PostToolUse, SessionStart, Stop, etc.). These enforce workflow discipline inside the agent session itself.
+
+See `references/hooks-catalog.md` for the full catalog with templates.
+
+#### Five categories
+
+| Category | Tier | Cost | Purpose |
+|----------|------|------|---------|
+| **Task Discipline** | Recommended | Free | Can't edit without active task, show tasks at session start |
+| **Quality Gates** | Optional | Medium (+15-30% tokens) | Review/simplify before push, docs before close |
+| **Domain Reminders** | Recommended | Free | Context-specific hints when editing certain directories |
+| **Safety Guards** | Recommended | Free | Block dangerous commands, --no-verify, manual deploys |
+| **Session Hygiene** | Optional | Free | Context size warnings, learnings capture |
+
+#### Bootstrap flow
+
+1. **Auto-detect** — scan for task tracker, CI pipeline, pre-commit hooks, domain guidelines
+2. **Ask 2-3 questions** — task tracker type, review workflow preference, session hygiene
+3. **Two-tier consent:**
+   - Recommended hooks (free) → batch approve
+   - Optional hooks (token-costly) → explicit consent with cost warning
+4. **Generate** — hook scripts in `.claude/hooks/`, register in `.claude/settings.json`
+
+#### Key rules
+
+- Hooks exit 0 (allow) or exit 2 (block with guidance)
+- PreToolUse hooks get 10s timeout
+- Marker files in `/tmp/` with `$SESSION_ID` for cross-hook state
+- Recommended hooks = safe default. Optional hooks = user must understand the cost
+- NEVER auto-enable token-costly hooks without explicit user agreement
+
+### 9. Architecture Documentation
 
 #### ARCHITECTURE.md
 
@@ -340,7 +373,7 @@ Generate dependency graphs in CI. Block on violations:
 - TypeScript: `dependency-cruiser --output-type dot | dot -T svg`
 - Python: `pydeps --no-show src/`
 
-### 9. Structured Boundaries
+### 10. Structured Boundaries
 
 #### Parse at the boundary
 
@@ -391,7 +424,7 @@ src/
 
 When every domain follows the same template, agents know where to add code without guessing.
 
-### 10. Continuation Context
+### 11. Continuation Context
 
 When a session fails or times out, the next attempt must know what was done.
 
@@ -431,7 +464,7 @@ Idempotency-Key: task-123-attempt-2"
 
 Server-side guard: before creating PR, check if one with the same idempotency key exists.
 
-### 11. Testing Strategy
+### 12. Testing Strategy
 
 #### TDD prompts
 
@@ -460,7 +493,7 @@ Make the app launchable per git worktree so agents can test in isolation:
 - Each worktree gets its own `.env` and database
 - Headless browser tests for UI verification
 
-### 12. Feedback Loop
+### 13. Feedback Loop
 
 ```
 Agent writes code
@@ -494,6 +527,7 @@ When to encode what:
 - [ ] Merge queue or branch protection blocking --no-verify
 - [ ] Feedback loop: review comments → rules/linters
 - [ ] Dependency diagrams generated in CI
+- [ ] Claude Code hooks configured (safety guards + workflow enforcement) — see `references/hooks-catalog.md`
 
 ---
 
@@ -501,7 +535,7 @@ When to encode what:
 
 **Time: ongoing. For repos where agents do most of the coding.**
 
-### 13. Self-Review Loop (Advanced): LoopAgent Pattern
+### 14. Self-Review Loop (Advanced): LoopAgent Pattern
 
 Beyond simple checklists — a Generator-Auditor loop with circuit breakers:
 
@@ -525,7 +559,7 @@ Beyond simple checklists — a Generator-Auditor loop with circuit breakers:
 
 **Circuit breaker:** set `max_iterations` (typically 3-5). If auditor keeps failing, escalate to human instead of infinite loop.
 
-### 14. Parallel Review Agents
+### 15. Parallel Review Agents
 
 Spin up parallel subagents for depth:
 
@@ -539,7 +573,7 @@ Main Agent
 
 Main agent synthesizes all results into prioritized summary. Much faster than sequential review.
 
-### 15. Diff-Aware Retry Templates
+### 16. Diff-Aware Retry Templates
 
 Jinja2 templates for context-aware retries:
 
@@ -554,7 +588,7 @@ Jinja2 templates for context-aware retries:
 Focus on fixing: {{ failing_tests[0] }}
 ```
 
-### 16. Multi-Agent Coordination
+### 17. Multi-Agent Coordination
 
 #### Orchestration topology
 
@@ -589,7 +623,7 @@ Lock-file protocol prevents duplicate work and race conditions.
 | Shared task list | Duplicate work | JSON with status tracking + locks | Strict lock protocol needed |
 | Merge queues | Merge conflicts on main | Mergify / GitHub merge queue | Delays time-to-merge |
 
-### 17. Doc-Gardener Automation
+### 18. Doc-Gardener Automation
 
 A recurring agent that maintains documentation freshness:
 
@@ -598,7 +632,7 @@ A recurring agent that maintains documentation freshness:
 - Validates links, checks for drift between ARCHITECTURE.md and actual imports
 - Runs weekly or on schedule
 
-### 18. Metrics & Dashboards
+### 19. Metrics & Dashboards
 
 #### Core KPIs
 
@@ -627,7 +661,7 @@ Use PR acceptance rates by task type to assess maturity:
 
 If acceptance rate drops, something is missing from the harness.
 
-### 19. Durable Orchestrators
+### 20. Durable Orchestrators
 
 For long-running, multi-step workflows:
 - **Temporal Workflows** — automatic state persistence, survives crashes
@@ -666,6 +700,9 @@ For long-running, multi-step workflows:
 | Use LLM as a linter | Use deterministic formatters and linters |
 | Define no permission boundaries | Explicitly list allowed vs restricted operations |
 | No feedback loop | Every review comment → rule or linter |
+| Auto-enable token-costly hooks | Always get explicit consent with cost estimate |
+| Write hooks without guidance messages | Every block must tell the agent what to do instead |
+| Skip hook consent in bootstrap | Two-tier: recommended (free) batch, optional (costly) explicit |
 
 ---
 
@@ -674,7 +711,7 @@ For long-running, multi-step workflows:
 ```
 Day 1:  L1 — Write CLAUDE.md, add pre-commit hooks, self-review checklist
 Week 1: L1 — Add reference examples, verify agent can build/test/lint
-Week 2: L2 — Add architecture linters to CI, write ARCHITECTURE.md
+Week 2: L2 — Add architecture linters to CI, write ARCHITECTURE.md, configure Claude Code hooks
 Week 3: L2 — Add boundary validation, continuation context
 Month 2: L2 — Testing strategy, feedback loop operational
 Month 3: L3 — Multi-agent, metrics, doc-gardener (if needed)

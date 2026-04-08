@@ -9,7 +9,7 @@ Make repositories work as operating systems for AI agents. Core principle: **enf
 
 Read `references/harness-guide.md` for the full playbook. This skill tells you HOW to apply it.
 
-## Two Modes
+## Three Modes
 
 ### Mode 1: Audit
 
@@ -20,6 +20,7 @@ When the user asks to assess, audit, or evaluate a repo's agent-readiness.
 1. **Scan the repo** for harness artifacts:
    - `CLAUDE.md` / `AGENTS.md` / `.cursorrules` — instruction files
    - `.pre-commit-config.yaml` — local hooks
+   - `.claude/settings.json` — Claude Code hooks
    - `.github/workflows/` or CI config — CI pipeline
    - `docs/ARCHITECTURE.md` or `ARCHITECTURE.md` — architecture docs
    - `docs/examples/` — reference examples
@@ -42,6 +43,7 @@ When the user asks to assess, audit, or evaluate a repo's agent-readiness.
    - Continuation context?
    - Testing strategy documented?
    - Feedback loop operational?
+   - Claude Code hooks configured? Check `.claude/settings.json` for hooks section. Evaluate coverage across 5 categories (task discipline, quality gates, domain reminders, safety guards, session hygiene). See `references/hooks-catalog.md`.
 
 4. **Evaluate L3 items** (read L3 Checklist):
    - LoopAgent pattern?
@@ -66,6 +68,7 @@ When the user asks to assess, audit, or evaluate a repo's agent-readiness.
 | Architecture docs | ⬤/◯ | [status] |
 | Reference examples | ⬤/◯ | [status] |
 | Permission boundaries | ⬤/◯ | [status] |
+| Claude Code hooks | ⬤/◯ | [N hooks in M/5 categories] |
 
 ## What's Working
 - [item]: [evidence from actual files]
@@ -104,6 +107,7 @@ When the user asks to improve, fix, implement, or add harness elements.
    - Linters should use a `KNOWN_EXCEPTIONS` set for intentional violations (lifespan wiring, service locators).
    - Follow the rollout strategy: advisory first if violations exist, promote to mandatory after fixing.
    - Reference examples should include negative examples ("use this, not that").
+   - **Claude Code hooks**: when asked to add hooks, follow the flow in `references/hooks-catalog.md` — scan codebase for signals, ask 2-3 workflow questions, present two-tier consent (recommended free / optional token-costly), generate scripts + settings.json entries.
 
 4. **Verify** — after changes, confirm the repo can still build/test/lint.
 
@@ -160,7 +164,16 @@ When the user asks to "bootstrap", "set up harness", "bring to L2", or simply in
    **docs/plans/** (if missing):
    - Create directory structure only
 
-4. **Present all changes for approval** — show a summary:
+4. **Configure Claude Code hooks** — read `references/hooks-catalog.md` for the full catalog:
+   - Auto-detect: task tracker, CI pipeline, pre-commit hooks, domain guidelines
+   - Ask 2-3 workflow questions (task tracker type, review workflow, session hygiene)
+   - Present two-tier consent:
+     - **Recommended hooks (free):** safety guards, task discipline, domain reminders → batch approve
+     - **Optional hooks (+15-30% tokens):** quality gates (review/simplify before push) → explicit consent with cost warning
+   - Generate hook scripts in `.claude/hooks/` and register in `.claude/settings.json`
+   - NEVER auto-enable token-costly hooks without explicit user agreement
+
+5. **Present all changes for approval** — show a summary:
    ```
    ## Bootstrap L2: [repo-name]
 
@@ -181,11 +194,12 @@ When the user asks to "bootstrap", "set up harness", "bring to L2", or simply in
    Approve to apply all changes?
    ```
 
-5. **Apply on approval** — write all files, verify build/test/lint still pass.
+6. **Apply on approval** — write all files, verify build/test/lint still pass.
 
-6. **Post-bootstrap checklist:**
+7. **Post-bootstrap checklist:**
    - [ ] `git add` new files, commit with message `chore: bootstrap L2 harness`
    - [ ] Verify pre-commit hooks work: `pre-commit run --all-files`
+   - [ ] Verify Claude Code hooks work (test a blocked command)
    - [ ] Verify CLAUDE.md is under 2000 tokens
    - [ ] All internal links resolve
 
